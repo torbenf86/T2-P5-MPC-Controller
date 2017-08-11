@@ -1,0 +1,8 @@
+The advantage of an MPC controller over an PID controller is that the MPC controller uses a model of the system to predict the system's behavior. An optimizer is used to find the optimal inputs to minimize a defined objective function. Thus, it can react already in advance on changes. In this application, the objective function is of least squares type and consists of... 
+  - trajectory variables (cross track error, epsi and velocity) and their target values (0,0, reference velocity)
+  - input variables (acceleration and steering angle, punishment to minimize the use) and their target values (0,0)
+  - input variables at node i (acceleration and steering angle, punishment to minimize the gap between sequential actuations) and their target values (  input variables at node i+1)
+
+The time horizon is N*dt = 0.75s and is discritized into N=15 intervals. The output of the optimization is a control vector with 15 values for the discretized time horizon for each input. Due to an actuation delay of 100ms = 2*dt, only the third element of the vector is used as control input. Due to mismatches between model and reality (in this case, a simulator) the optimization is repeated with new measurement data of all state variables. These measurements are provided by the simulator.
+
+The state variables are free variables and part of the optimization, but are constrained by the model equations (see Multiple Shooting vs. Single Shooting, where the model equations are part of the objective function). At each node there are matching conditions for the state variables to ensure a continuous trajectory. The used optimizer is IPOPT in combination with cppAD, which is able to supply analytic derivatives.
