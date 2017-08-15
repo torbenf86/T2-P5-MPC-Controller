@@ -10,6 +10,7 @@ The time horizon is N * dt = 0.75s and is discritized into N=15 intervals. The o
 
 The state variables are free variables and part of the optimization, but are constrained by the model equations (see Multiple Shooting vs. Single Shooting, where the model equations are part of the objective function). At each node there are matching conditions for the state variables to ensure a continuous trajectory. The used optimizer is IPOPT in combination with cppAD, which is able to supply analytic derivatives.
 
+The appropriate video can be found under https://youtu.be/zy10cq-d-oA
 
 An alternative approach would be to model the system as an differential-algebraic system (DAE) for example in the modelling language Modelica. The model can be exported as Functional Mockup Unit (FMU) and then interfaced by the C++-code. The advantage is, that complex models can be developed in an modelling environment and variable step solvers can be included to solve the system.
 
