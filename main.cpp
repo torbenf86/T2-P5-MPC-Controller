@@ -66,10 +66,10 @@ namespace {
   }
 
 
-  // In vehicle coordinates the orientation error epsi is 
+  // In vehicle coordinates the orientation error epsi is
   // -atan(c1 + c2*x + c3* x^2), but the car is always at x=0.
   double evaluateEpsi(Eigen::VectorXd coeffs) {
-    return -atan(coeffs[1]);  
+    return -atan(coeffs[1]);
   }
 
 
@@ -118,8 +118,7 @@ int main() {
           double psi = j[1]["psi"];
           double v = j[1]["speed"];
 
-          // Affine transformation. Translate to car coordinate system then rotate to the car's orientation. 
-          // Local coordinates take capital letters. The reference trajectory in local coordinates:
+          // transform to car coordinates
           Eigen::MatrixXd waypoints = transform(px,py,psi,ptsx,ptsy);
           Eigen::VectorXd Ptsx = waypoints.row(0);
           Eigen::VectorXd Ptsy = waypoints.row(1);
@@ -127,7 +126,7 @@ int main() {
           // fit a 3rd order polynomial to the waypoints
           auto coeffs = polyfit(Ptsx, Ptsy, 3);
 
-          // get cross-track error from fit 
+          // get cross-track error from fit
           double cte = polyeval(coeffs, 0);
 
           // get orientation error from fit
@@ -136,13 +135,13 @@ int main() {
           Eigen::VectorXd state(6);
           state << 0, 0, 0, v, cte, epsi;
 
-          // compute the optimal trajectory          
+          // compute the optimal trajectory
           Result res = mpc.Solve(state, coeffs);
 
 		  // latency time 100 ms = 2*dt -> 3rd value
           double steer_value = res.delta[2];
           double throttle_value= res.a[2];
-		  
+
 		  // save last input values
           mpc.delta_old = steer_value;
           mpc.a_old = throttle_value;
@@ -150,8 +149,8 @@ int main() {
           json msgJson;
           // NOTE: Remember to divide by deg2rad(25) before you send the steering value back.
           // Otherwise the values will be in between [-deg2rad(25), deg2rad(25] instead of [-1, 1].
-         
-          msgJson["steering_angle"] = steer_value/deg2rad(25); 
+
+          msgJson["steering_angle"] = steer_value/deg2rad(25);
           msgJson["throttle"] = throttle_value;
 
           //.. add (x,y) points to list here, points are in reference to the vehicle's coordinate system
@@ -164,8 +163,8 @@ int main() {
           cout << " epsi        " << epsi << endl;
           cout << " steer_value " << steer_value << endl ;
           cout << " throttle    " << throttle_value << endl ;
-          
-          // Display the MPC predicted trajectory 
+
+          // Display the MPC predicted trajectory
           msgJson["mpc_x"] = res.x;
           msgJson["mpc_y"] = res.y;
 
@@ -194,7 +193,7 @@ int main() {
           //
           // NOTE: REMEMBER TO SET THIS TO 100 MILLISECONDS BEFORE
           // SUBMITTING.
-     
+
           this_thread::sleep_for(chrono::milliseconds(100));
           ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
         }

@@ -20,9 +20,7 @@ const double dt = 0.05;
 // This is the length from front to CoG that has a similar radius.
 const double Lf = 2.67;
 
-double ref_cte = 0;
-double ref_epsi = 0;
-double ref_v = 70;
+double ref_v = 40;
 
 // The solver takes all the state variables and actuator
 // variables in a singular vector. Thus, we should to establish
@@ -42,8 +40,8 @@ class FG_eval {
   Eigen::VectorXd coeffs;
 
   // Coefficients of the fitted polynomial.
-FG_eval(Eigen::VectorXd coeffs) { 
-  	this->coeffs = coeffs; 
+FG_eval(Eigen::VectorXd coeffs) {
+  	this->coeffs = coeffs;
 
   }
 
@@ -65,7 +63,7 @@ FG_eval(Eigen::VectorXd coeffs) {
 
     // Minimize the use of actuators.
     for (int t = 0; t < N - 1; t++) {
-      fg[0] += 20*CppAD::pow(vars[delta_start + t], 2);
+      fg[0] += 30*CppAD::pow(vars[delta_start + t], 2);
       fg[0] += 10*CppAD::pow(vars[a_start + t], 2);
     }
 
@@ -82,7 +80,7 @@ FG_eval(Eigen::VectorXd coeffs) {
     // We add 1 to each of the starting indices due to cost being located at
     // index 0 of `fg`.
     // This bumps up the position of all the other values.
-    // 
+    //
 
     fg[1 + x_start] = vars[x_start];
     fg[1 + y_start] = vars[y_start];
